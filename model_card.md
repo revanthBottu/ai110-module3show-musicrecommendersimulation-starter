@@ -5,7 +5,7 @@
 Give your model a short, descriptive name.  
 Example: **VibeFinder 1.0**  
 
----
+---Recommendo
 
 ## 2. Intended Use  
 
@@ -17,7 +17,7 @@ Prompts:
 - What assumptions does it make about the user  
 - Is this for real users or classroom exploration  
 
----
+---It is used for music recommendation. It assumes that a realistic user may not have only one preference in genre when looking for new songs, so it matches more closely on mood.
 
 ## 3. How the Model Works  
 
@@ -32,7 +32,7 @@ Prompts:
 
 Avoid code here. Pretend you are explaining the idea to a friend who does not program.
 
----
+---genre and mood are used to filter, with how closely a song matches mood having more weight than a song's genre. User preferences towards energy, danceability, and valence are considered for ranking. Those features are turned into scores based on similarity with the user profile.
 
 ## 4. Data  
 
@@ -45,7 +45,7 @@ Prompts:
 - Did you add or remove data  
 - Are there parts of musical taste missing in the dataset  
 
----
+---The csv has about 10 songs with various genres. It might be beneficial to have more songs to provide a wider range of results for the user.
 
 ## 5. Strengths  
 
@@ -57,7 +57,7 @@ Prompts:
 - Any patterns you think your scoring captures correctly  
 - Cases where the recommendations matched your intuition  
 
----
+---This model accurately captures songs with similar mood and genre, and the ranking for minor features helps tune the search more towards what the user likes.
 
 ## 6. Limitations and Bias 
 
@@ -70,7 +70,7 @@ Prompts:
 - Cases where the system overfits to one preference  
 - Ways the scoring might unintentionally favor some users  
 
----
+---The system might not be able to guarantee a song is similar to other songs the user likes. Some songs may have all the same features as the ones in the taste profile, but differ in lyrics or prod value, which can change the song entirely.
 
 ## 7. Evaluation  
 
@@ -85,7 +85,7 @@ Prompts:
 
 No need for numeric metrics unless you created some.
 
----
+---I looked for good similarity among diverse profiles across differing genres and moods, and a good ranking system where the higher songs matched the other scores well.
 
 ## 8. Future Work  
 
@@ -98,7 +98,7 @@ Prompts:
 - Improving diversity among the top results  
 - Handling more complex user tastes  
 
----
+---I would probably add more features towards beat, lyrics, and tone to better tune the model.
 
 ## 9. Personal Reflection  
 
@@ -108,4 +108,6 @@ Prompts:
 
 - What you learned about recommender systems  
 - Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+- How this changed the way you think about music recommendation apps 
+
+Recommender systems generally do well when presented with more features, which they can weight well against other features to give specific songs closer to what the user wants.

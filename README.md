@@ -13,7 +13,7 @@ Your goal is to:
 
 Replace this paragraph with your own summary of what your version does.
 
----
+My version understands the mood and genre of the user's taste profile, filters by those, and then ranks them by energy, danceability, and valence.
 
 ## How The System Works
 
@@ -29,7 +29,7 @@ Some prompts to answer:
 
 You can include a simple diagram or bullet list if helpful.
 
----
+My user profile tracks all the features of the songs. The recommender itself takes the mood and genre from the user, filters by how close other songs match the mood and genre, and then ranks those filtered by how closely they match energy, danceability, and valence.
 
 ## Getting Started
 
