@@ -128,7 +128,7 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
     Scores a single song against user preferences.
     Required by recommend_songs() and src/main.py
 
-    Weights:
+    Core weights (always applied):
       Mood match:          +3.0  (primary filter signal)
       Genre match:         +2.0  (secondary filter signal)
       Energy similarity:    2.0  (highest ranking feature)
@@ -136,6 +136,14 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
       Valence:              1.0
       Tempo (normalized):   0.5
       Acousticness:         0.5
+
+    Optional user_prefs keys for finer control:
+      target_danceability  (float 0–1): score by similarity instead of "higher = better"
+      target_valence       (float 0–1): score by similarity instead of "higher = better"
+      target_tempo_bpm     (float)    : score by BPM proximity instead of "faster = better"
+      likes_acoustic       (bool)     : prefer acoustic (True) or electronic (False) sound
+      avoid_mood           (str)      : penalise songs whose mood matches this value (-1.5)
+      avoid_genre          (str)      : penalise songs whose genre matches this value (-1.0)
     """
     score = 0.0
     reasons = []
@@ -153,6 +161,18 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         score += 2.0
         reasons.append(f"genre matches '{song['genre']}'")
 
+    # Mood avoidance penalty — weight -1.5
+    avoid_mood = user_prefs.get('avoid_mood', '')
+    if avoid_mood and song['mood'] == avoid_mood:
+        score -= 1.5
+        reasons.append(f"mood '{song['mood']}' is one you want to avoid")
+
+    # Genre avoidance penalty — weight -1.0
+    avoid_genre = user_prefs.get('avoid_genre', '')
+    if avoid_genre and song['genre'] == avoid_genre:
+        score -= 1.0
+        reasons.append(f"genre '{song['genre']}' is one you want to avoid")
+
     target_energy = user_prefs.get('energy', 0.5)
 
     # Energy similarity — weight 2.0
@@ -162,16 +182,38 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         reasons.append(f"energy level close to target ({song['energy']:.2f})")
 
     # Danceability — weight 1.5
-    score += 1.5 * song['danceability']
-    if song['danceability'] >= 0.70:
-        reasons.append(f"highly danceable ({song['danceability']:.2f})")
+    # If target_danceability is given, score by proximity; otherwise reward higher values.
+    if 'target_danceability' in user_prefs:
+        dance_sim = 1.0 - abs(user_prefs['target_danceability'] - song['danceability'])
+        score += 1.5 * dance_sim
+        if dance_sim >= 0.85:
+            reasons.append(f"danceability close to target ({song['danceability']:.2f})")
+    else:
+        score += 1.5 * song['danceability']
+        if song['danceability'] >= 0.70:
+            reasons.append(f"highly danceable ({song['danceability']:.2f})")
 
     # Valence — weight 1.0
-    score += 1.0 * song['valence']
+    # If target_valence is given, score by proximity; otherwise reward higher values.
+    if 'target_valence' in user_prefs:
+        valence_sim = 1.0 - abs(user_prefs['target_valence'] - song['valence'])
+        score += 1.0 * valence_sim
+        if valence_sim >= 0.85:
+            reasons.append(f"emotional tone close to target ({song['valence']:.2f})")
+    else:
+        score += 1.0 * song['valence']
 
-    # Tempo normalized over 60–180 BPM range — weight 0.5
-    tempo_norm = max(0.0, min(1.0, (song['tempo_bpm'] - 60) / 120))
-    score += 0.5 * tempo_norm
+    # Tempo — weight 0.5
+    # If target_tempo_bpm is given, score by proximity; otherwise reward faster songs.
+    song_tempo_norm = max(0.0, min(1.0, (song['tempo_bpm'] - 60) / 120))
+    if 'target_tempo_bpm' in user_prefs:
+        target_tempo_norm = max(0.0, min(1.0, (user_prefs['target_tempo_bpm'] - 60) / 120))
+        tempo_sim = 1.0 - abs(target_tempo_norm - song_tempo_norm)
+        score += 0.5 * tempo_sim
+        if tempo_sim >= 0.90:
+            reasons.append(f"tempo close to target ({song['tempo_bpm']:.0f} BPM)")
+    else:
+        score += 0.5 * song_tempo_norm
 
     # Acousticness — weight 0.5
     likes_acoustic = user_prefs.get('likes_acoustic', False)

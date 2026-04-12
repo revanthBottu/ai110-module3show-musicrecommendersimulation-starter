@@ -74,7 +74,7 @@ Use this section to document the experiments you ran. For example:
 - What happened when you added tempo or valence to the score
 - How did your system behave for different types of users
 
----
+---Generally, changing the genre to have more weight worked worse than prioritizing the mood. Adding tempo and valence just made ranking easier, but their weightage worked fine. Users with more preference to genre might not get as satisfying results as those with more focus on mood.
 
 ## Limitations and Risks
 
@@ -88,7 +88,7 @@ Examples:
 
 You will go deeper on this in your model card.
 
----
+---My recommender might not be able to give an in-depth understanding of the songs. Some people might like a song for its lyrics, or the production of the beat. Unfortunately, the model does not cover that.
 
 ## Reflection
 
@@ -100,6 +100,8 @@ Write 1 to 2 paragraphs here about what you learned:
 
 - about how recommenders turn data into predictions
 - about where bias or unfairness could show up in systems like this
+
+I learned how to create my own recommendation algorithm, and implement it in hard code using Copilot. One thing that Copilot struggled on was implementing the recommendation algorithm right. This usually means I had to change weights or reconfigure how I wanted the algorithm.
 
 
 ---
@@ -209,3 +211,6 @@ A few sentences about what you learned:
 - How did building this change how you think about real music recommenders
 - Where do you think human judgment still matters, even if the model seems "smart"
 
+![alt text](image.png)
+
+![alt text](image-1.png)
